@@ -1,6 +1,6 @@
 import customtkinter as tk
 
-class VirtualDom:
+class createDom:
     def __init__(self):
         self.root = tk.CTk()  # Create the root window
         self.elements = []
@@ -39,15 +39,20 @@ class VirtualDom:
 
     def setState(self, attr, value):
         self.states[attr]["value"] = value
-        if "callback" in self.states[attr]:
-            self.states[attr]["callback"](self, value)
+        if "callbacks" in self.states[attr]:
+            for callback in self.states[attr]["callbacks"]:
+                callback(attr, self, value)
 
-    def useState(self, name, value, callback):
-        self.states[name] = {"value": value, "callback": callback}
+    def useState(self, attr, value, callback):
+        st = self.states.get(attr)
+        if st:
+            self.states[attr] = {"value": value, "callbacks": st.callbacks.append(callback)}
+        else:
+            self.states[attr] = {"value": value, "callbacks": [callback]}
         # Register a state with its initial value and associated callback
 
-class VirtualElement:
-    def __init__(self, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None):
+class createElement:
+    def __init__(self, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None):
         self.name = name or "Pynamic" + tag + "Element"  # Name of the virtual element
         self.tag = "CTk" + tag  # Tag name for tkinter widget
         self.props = props or {}  # Dictionary to store widget properties
@@ -57,6 +62,7 @@ class VirtualElement:
         self.visible = visible  # Flag to indicate element visibility
         self.hooks = hooks or {}  # Dictionary to store hooks
         self.parent = None  # Reference to the parent element
+        self.style = style or {}
 
     def render(self, parent):
         self.parent = parent
@@ -66,6 +72,9 @@ class VirtualElement:
             self.widget = getattr(tk, self.tag)(parent.widget)  # Create the tkinter widget
             for prop, value in self.props.items():
                 self.widget.configure(**{prop: value})  # Configure widget properties
+                
+            for item, value in self.style.items():
+                self.widget.configure(**{item: value})
 
             for child in self.children:
                 if child.visible:
@@ -78,27 +87,28 @@ class VirtualElement:
         if self.widget:
             self.widget.destroy()
             self.widget = None
-        for hook in self.hooks.values():
+        for prop, hook in self.hooks.items():
             if hook[1] is not None:
-                hook[1](self)  # Invoke the unmount hook if present
+                hook[1](prop, self, self.props.get(prop))  # Invoke the unmount hook if present
         for child in self.children:
             child.unmount()  # Unmount each child element recursively
 
     def mount(self):
-        if self.hooks.get(""):
-            self.hooks[""][0](self)  # Invoke the mount hook if present
+        if self.hooks.get("") and self.hooks[""][0]:
+            self.hooks[""][0]("", self, True)  # Invoke the mount hook if present
         for child in self.children:
             child.mount()  # Mount each child element recursively
 
-    def useEffect(self, prop, callback, unmount=None):
-        self.hooks[prop] = [callback, unmount]  # Register a hook with its callback and unmount function
+    def useEffect(self, props=[""], hook=None, unmount=None):
+        for prop in props:
+            self.hooks[prop] = [hook, unmount]  # Register a hook with its callback and unmount function
 
     def setProp(self, prop, value):
         self.props[prop] = value  # Update the property value
         self.widget.configure(**{prop: value})  # Configure the updated property
         
         if self.hooks.get(prop):
-            self.hooks[prop][0](self, value)  # Invoke the hook callback if present
+            self.hooks[prop][0](prop, self, value)  # Invoke the hook callback if present
 
     def hide(self):
         self.visible = False
@@ -108,3 +118,18 @@ class VirtualElement:
         self.visible = True
         self.render(self.parent)  # Render the element in the parent
         self.mount()  # Mount the element and its children
+
+    def setStyle(self, style):
+        self.style = style
+        if self.widget:
+            for item, value in self.style.items():
+                self.widget.configure(**{item: value})
+
+def setAppearanceMode(mode):
+    tk.set_appearance_mode(mode)
+
+def setDefaultColorTheme(theme):
+    tk.set_default_color_theme(theme)
+
+def setWidgetScaling(scale):
+    tk.set_widget_scaling(scale)
