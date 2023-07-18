@@ -1,21 +1,34 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-[project]
-name = "pynamicui"
-version = "0.0.1"
-authors = [
-  { name="zacharie410", email="zacharie410@gmail.com" },
-]
-description = "dynamic web-like UIs using a declarative syntax"
-readme = "README.md"
-requires-python = ">=3.7"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[project.urls]
-"Homepage" = "https://github.com/zacharie410/PynamicUI"
-"Bug Tracker" = "https://github.com/zacharie410/PynamicUI/issues"
+[tool.tbump]
+github_url = "https://github.com/zacharie410/PynamicUI"
+
+[tool.tbump.version]
+current = "0.0.3"
+
+# Example of a semver regexp.
+# Make sure this matches current_version before
+# using tbump
+regex = '''
+  (?P<major>\d+)
+  \.
+  (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
+  '''
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+# For each file to patch, add a [[tool.tbump.file]] config
+# section containing the path of the file, relative to the
+# tbump.toml location.
+[[tool.tbump.file]]
+src = "setup.cfg"
+
+[[tool.tbump.file]]
+src = "pynamicui/__init__.py"
+search = "__version__ = \"{current_version}\""

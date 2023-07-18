@@ -1,3 +1,5 @@
+__version__ = "0.0.3"
+
 import customtkinter as tk
 
 from .createDom import createDom

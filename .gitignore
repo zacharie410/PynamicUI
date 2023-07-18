@@ -3,3 +3,4 @@ token.txt
 dist/
 .pypirc
 myenv/
+pynamicui.egg-info
