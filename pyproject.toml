@@ -2,7 +2,7 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 [project]
-name = "pynamicui_zacharie410"
+name = "pynamicui"
 version = "0.0.1"
 authors = [
   { name="zacharie410", email="zacharie410@gmail.com" },
