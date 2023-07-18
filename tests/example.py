@@ -1,5 +1,5 @@
 
-from pynamicui_zacharie410 import (createStylesheet, createDom, createElement, setAppearanceMode)
+from pynamicui import (createStylesheet, createDom, createElement, setAppearanceMode)
 
 import customtkinter as tk
 styles = createStylesheet()
