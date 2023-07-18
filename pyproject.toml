@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "pynamicui_zacharie410"
+version = "0.0.1"
+authors = [
+  { name="zacharie410", email="zacharie410@gmail.com" },
+]
+description = "dynamic web-like UIs using a declarative syntax"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/zacharie410/PynamicUI"
+"Bug Tracker" = "https://github.com/zacharie410/PynamicUI/issues"
