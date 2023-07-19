@@ -103,9 +103,9 @@ if __name__ == "__main__":
 
 For detailed documentation and usage examples, please refer to the [PynamicUI Wiki](https://github.com/zacharie410/PynamicUI/wiki).
 
-## Example
+## Examples
 
-Check out the [example.py](https://github.com/zacharie410/PynamicUI/blob/main/examples/example.py) script for a practical example of building a counter application with PynamicUI.
+Check out the [examples](https://github.com/zacharie410/PynamicUI/blob/main/examples/) folder for practical examples building an application with PynamicUI.
 
 ## Contributions
 
