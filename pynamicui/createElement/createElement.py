@@ -1,25 +1,39 @@
 import customtkinter as tk
 
+def findDom(parent):
+    if hasattr(parent, "root"):
+        return parent
+    elif hasattr(parent, "parent"):
+        return findDom(parent.parent)
+    else:
+        # If no "root" attribute is found and there is no "parent" attribute, return None or raise an exception
+        return None
+        
 class createElement:
-    def __init__(self, dom, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None):
-        self.dom = dom
+    def __init__(self, parent, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None):
+        self.parent = parent
         self.name = name or "Pynamic" + tag + "Element"  # Name of the virtual element
         self.tag = "CTk" + tag  # Tag name for tkinter widget
         self.props = props or {}  # Dictionary to store widget properties
         self.children = children or []  # List of child elements
         self.widget = None  # Reference to the tkinter widget instance
-        self.place = place  # Placement options for the widget
+        self.currentPlace = place or {}  # Placement options for the widget
         self.visible = visible  # Flag to indicate element visibility
         self.hooks = hooks or {}  # Dictionary to store hooks
-        self.parent = None  # Reference to the parent element
         self.style = style or ""
-
-    def render(self, parent):
-        self.parent = parent
         
+        if hasattr(self.parent, "root"):
+            self.dom = self.parent
+            self.dom.addElement(self)
+        elif self.parent:
+            self.dom = findDom(self.parent.parent)
+            self.parent.appendChild(self)
+        
+
+    def render(self):
         if self.visible:
 
-            self.widget = getattr(tk, self.tag)(parent.widget)  # Create the tkinter widget
+            self.widget = getattr(tk, self.tag)(self.parent.widget)  # Create the tkinter widget
             for prop, value in self.props.items():
                 self.widget.configure(**{prop: value})  # Configure widget properties
             
@@ -27,20 +41,19 @@ class createElement:
 
             for child in self.children:
                 if child.visible:
-                    child.render(self)  # Render each child element
+                    child.render()  # Render each child element
 
-            if self.place and self.visible:
-                self.widget.place(**self.place)  # Place the widget in the parent
+            self.widget.place(**self.currentPlace)  # Place the widget in the parent
 
     def unmount(self):
-        if self.widget:
-            self.widget.destroy()
-            self.widget = None
         for prop, hook in self.hooks.items():
             if hook[1] is not None:
                 hook[1](prop, self, self.props.get(prop))  # Invoke the unmount hook if present
         for child in self.children:
             child.unmount()  # Unmount each child element recursively
+        if self.widget:
+            self.widget.destroy()
+            self.widget = None
 
     def mount(self):
         if self.hooks.get("") and self.hooks[""][0]:
@@ -65,14 +78,22 @@ class createElement:
     
     def show(self):
         self.visible = True
-        self.render(self.parent)  # Render the element in the parent
+        self.render()  # Render the element in the parent
         self.mount()  # Mount the element and its children
 
     def setStyle(self, style):
         self.style = style
         self.updateStyle()
 
+    def place(self, geometry):
+        self.currentPlace = geometry
+        if self.widget:
+            self.widget.place(**self.currentPlace)
+
     def updateStyle(self):
         if self.style != "" and self.widget:
             for item, value in self.dom.stylesheet[self.style].items():
                 self.widget.configure(**{item: value})
+
+    def appendChild(self, child):
+        self.children.append(child)

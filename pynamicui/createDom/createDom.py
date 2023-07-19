@@ -13,7 +13,8 @@ class createDom:
 
     def render(self):
         for element in self.elements:
-            element.render(self)  # Render each element in the root window
+            element.render()  # Render each element in the root window
+            element.mount() # Mount the element and its children
         self.root.mainloop()  # Start the main event loop
 
     def getCurrentRoute(self):
