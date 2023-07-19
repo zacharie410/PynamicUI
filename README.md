@@ -16,8 +16,7 @@ PynamicUI is a lightweight Python library that provides a dynamic user interface
 PynamicUI requires the `CustomTkinter` library. To install PynamicUI and its dependencies, you can use `pip`:
 
 ```bash
-pip install PynamicUI
-pip install CustomTkinter
+pip install pynamicui
 ```
 
 ## Getting Started
