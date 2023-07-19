@@ -19,6 +19,34 @@ PynamicUI requires the `CustomTkinter` library. To install PynamicUI and its dep
 pip install pynamicui
 ```
 
+## Documentation
+
+For detailed documentation and usage examples, please refer to the [PynamicUI Wiki](https://github.com/zacharie410/PynamicUI/wiki).
+
+## Examples
+
+Check out the [examples](https://github.com/zacharie410/PynamicUI/blob/main/examples/) folder for practical examples building an application with PynamicUI.
+
+### [Example Calculator App](https://github.com/zacharie410/PynamicUI/wiki/Example-Calculator-App)
+![App](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/calculatorapp.png?raw=true)
+Explore a step-by-step tutorial on how to build a simple calculator app using PynamicUI.
+
+### [Example Counter App](https://github.com/zacharie410/PynamicUI/wiki/Example-Counter-App)
+![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/counterapp.png?raw=true)
+See a practical example of creating a counter app to learn more about PynamicUI's state management and hooks.
+
+### [Example Dynamic List](https://github.com/zacharie410/PynamicUI/wiki/Example-Dynamic-List)
+![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/dynamiclistapp.png?raw=true)
+Discover how to create a dynamic list using PynamicUI's powerful `place` method for flexible and responsive UI elements.
+
+### [Example NavBar App](https://github.com/zacharie410/PynamicUI/wiki/Example-NavBar-App)
+![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/navbarapp.png?raw=true)
+Explore a tutorial on building a navigation bar with buttons to switch between different pages in your application.
+
+## An abstraction of CustomTkinter
+PynamicUI supports nearly all the same elements as [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter).
+![](https://github.com/TomSchimansky/CustomTkinter/blob/master/documentation_images/image_example_dark_Windows.png?raw=true)
+
 ## Getting Started
 
 ### Using PynamicUI in a New Project
@@ -116,37 +144,14 @@ if __name__ == "__main__":
     dom = createDom(root=existingCustomTkinterRoot)
 ```
 
-## Documentation
-
-For detailed documentation and usage examples, please refer to the [PynamicUI Wiki](https://github.com/zacharie410/PynamicUI/wiki).
-
-## Examples
-
-Check out the [examples](https://github.com/zacharie410/PynamicUI/blob/main/examples/) folder for practical examples building an application with PynamicUI.
-
-### [Example Calculator App](https://github.com/zacharie410/PynamicUI/wiki/Example-Calculator-App)
-![App](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/calculatorapp.png?raw=true)
-Explore a step-by-step tutorial on how to build a simple calculator app using PynamicUI.
-
-### [Example Counter App](https://github.com/zacharie410/PynamicUI/wiki/Example-Counter-App)
-![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/counterapp.png?raw=true)
-See a practical example of creating a counter app to learn more about PynamicUI's state management and hooks.
-
-### [Example Dynamic List](https://github.com/zacharie410/PynamicUI/wiki/Example-Dynamic-List)
-![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/dynamiclistapp.png?raw=true)
-Discover how to create a dynamic list using PynamicUI's powerful `place` method for flexible and responsive UI elements.
-
-### [Example NavBar App](https://github.com/zacharie410/PynamicUI/wiki/Example-NavBar-App)
-![](https://github.com/zacharie410/PynamicUI/blob/main/examples/screenshots/navbarapp.png?raw=true)
-Explore a tutorial on building a navigation bar with buttons to switch between different pages in your application.
-
-## An abstraction of CustomTkinter
-PynamicUI offers all the same elements as CustomTkinter.
-![](https://github.com/TomSchimansky/CustomTkinter/blob/master/documentation_images/image_example_dark_Windows.png?raw=true)
-
 ## Contributions
 
 Contributions to PynamicUI are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on [GitHub](https://github.com/zacharie410/PynamicUI).
+
+## Issue Tracking
+
+This wiki page explains the proper procedures for submitting an issue related to PynamicUI
+[Issue Tracking with PynamicUI](https://github.com/zacharie410/PynamicUI/wiki/Issue-Tracking)
 
 ## License
 
