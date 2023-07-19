@@ -9,9 +9,13 @@ container = createElement(dom, "Frame", place={"relx": 0, "rely": 0, "relwidth":
 
 # Dynamic list items (using a loop to create multiple items)
 num_items = 5
+
+def createButton(i):
+    item = createElement(container, "Button", props={"text": f"Item {i+1}", "command": lambda: item.destroy()})
+    item.place({"relx":0, "rely":(i / num_items), "relwidth":1, "relheight": (1 / num_items)}) 
+
 for i in range(num_items):
-    item = createElement(container, "Button", props={"text": f"Item {i+1}"})
-    item.place({"relx":0, "rely":(i / num_items), "relwidth":1, "relheight": (1 / num_items)})
+    createButton(i)
 
 # Render the virtual DOM
 dom.render()

@@ -1,4 +1,4 @@
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 import customtkinter as tk
 
@@ -11,6 +11,3 @@ def setAppearanceMode(mode):
 
 def setDefaultColorTheme(theme):
     tk.set_default_color_theme(theme)
-
-def setWidgetScaling(scale):
-    tk.set_widget_scaling(scale)

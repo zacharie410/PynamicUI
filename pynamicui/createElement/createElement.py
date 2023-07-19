@@ -21,10 +21,11 @@ class createElement:
         self.visible = visible  # Flag to indicate element visibility
         self.hooks = hooks or {}  # Dictionary to store hooks
         self.style = style or ""
-        
+        self.mounted = False
+
         if hasattr(self.parent, "root"):
             self.dom = self.parent
-            self.dom.addElement(self)
+            self.dom.appendChild(self)
         elif self.parent:
             self.dom = findDom(self.parent.parent)
             self.parent.appendChild(self)
@@ -32,7 +33,9 @@ class createElement:
 
     def render(self):
         if self.visible:
-
+            
+            if self.widget:
+                self.widget.destroy()
             self.widget = getattr(tk, self.tag)(self.parent.widget)  # Create the tkinter widget
             for prop, value in self.props.items():
                 self.widget.configure(**{prop: value})  # Configure widget properties
@@ -46,6 +49,7 @@ class createElement:
             self.widget.place(**self.currentPlace)  # Place the widget in the parent
 
     def unmount(self):
+        self.mounted = False
         for prop, hook in self.hooks.items():
             if hook[1] is not None:
                 hook[1](prop, self, self.props.get(prop))  # Invoke the unmount hook if present
@@ -56,6 +60,7 @@ class createElement:
             self.widget = None
 
     def mount(self):
+        self.mounted = True
         if self.hooks.get("") and self.hooks[""][0]:
             self.hooks[""][0]("", self, True)  # Invoke the mount hook if present
         for child in self.children:
@@ -96,4 +101,36 @@ class createElement:
                 self.widget.configure(**{item: value})
 
     def appendChild(self, child):
+        if child in child.parent.children:
+            index_to_remove = child.parent.children.index(child)
+            child.parent.children.pop(index_to_remove)
         self.children.append(child)
+        child.parent = self
+
+    def setParent(self, parent):
+        if self in self.parent.children:
+            index_to_remove = self.parent.children.index(self)
+            self.parent.children.pop(index_to_remove)
+        self.parent = parent
+        if hasattr(self.parent, "root"):
+            self.dom = self.parent
+            self.dom.appendChild(self)
+        elif self.parent:
+            self.dom = findDom(self.parent.parent)
+            self.parent.appendChild(self)
+        self.render()
+
+    def destroy(self):
+        if self in self.parent.children:
+            index_to_remove = self.parent.children.index(self)
+            self.parent.children.pop(index_to_remove)
+        self.parent = None
+        if self.widget:
+            self.widget.destroy()
+        self.props = {}
+        self.hooks = {}
+        for child in self.children:
+            child.destroy()
+        del self
+
+

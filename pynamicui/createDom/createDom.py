@@ -1,9 +1,9 @@
 import customtkinter as tk
 
 class createDom:
-    def __init__(self):
-        self.root = tk.CTk()  # Create the root window
-        self.elements = []
+    def __init__(self, root=None):
+        self.root = root or tk.CTk()  # Create the root window
+        self.children = []
         self.routes = {}
         self.currentPage = None
         self.route = ""
@@ -12,7 +12,7 @@ class createDom:
         self.stylesheet = {}
 
     def render(self):
-        for element in self.elements:
+        for element in self.children:
             element.render()  # Render each element in the root window
             element.mount() # Mount the element and its children
         self.root.mainloop()  # Start the main event loop
@@ -33,8 +33,12 @@ class createDom:
         self.currentPage = self.getRoute(url)
         self.currentPage.show()
 
-    def addElement(self, element):
-        self.elements.append(element)
+    def appendChild(self, child):
+        if child in child.parent.children:
+            index_to_remove = child.parent.children.index(child)
+            child.parent.children.pop(index_to_remove)
+        self.children.append(child)
+        child.parent = self
 
     def getState(self, attr):
         return self.states[attr]["value"]
@@ -54,7 +58,7 @@ class createDom:
         # Register a state with its initial value and associated callback
 
     def setStylesheet(self, sheet):
-        self.stylesheet=sheet
+        self.stylesheet=sheet.stylesheet
 
     def setGeometry(self, val):
         if self.widget:

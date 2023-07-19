@@ -35,16 +35,29 @@ import customtkinter as tk
 2. Define your UI components using the `createElement` class:
 
 ```python
-class CounterPage:
+class CounterApp:
     def __init__(self, dom):
-        # Define your UI components here
-        pass
+        self.dom = dom
+        # Create the counter state using dom.useState
+        self.dom.useState("counter", 0, self.update_counter_label)
 
-class App:
-    def __init__(self):
-        self.dom = createDom()
-        # Create your UI components here
-        pass
+        # Create a label to display the counter value
+        self.counter_label = createElement(self.dom, "Label", props={"text": "Counter: 0"}, place={"relwidth": 1, "relheight": 0.5})
+
+        # Create a button to increment the counter
+        self.increment_button = createElement(self.dom, "Button", style="PrimaryButton", props={"text": "Increment", "command": self.increment_counter}, place={"relwidth": 1, "relheight": 0.5, "rely": 0.5})
+
+    def increment_counter(self):
+        # Get the current counter value
+        counter = self.dom.getState("counter")
+        # Increment the counter value
+        counter += 1
+        # Update the counter state
+        self.dom.setState("counter", counter)
+
+    def update_counter_label(self, prop, element, value):
+        # Update the counter label text prop with the new counter value
+        self.counter_label.setProp("text", f"Counter: {value}")
 ```
 
 3. Add styles using the `createStylesheet` class:
@@ -69,7 +82,12 @@ styles.addStyle("SecondaryButton", {
 
 ```python
 if __name__ == "__main__":
-    App()
+    dom = createDom()
+    dom.setStylesheet(styles)
+    
+    CounterApp(dom)
+
+    dom.render()
 ```
 
 ### Integrating PynamicUI in an Existing Project
@@ -95,7 +113,7 @@ import customtkinter as tk
 
 ```python
 if __name__ == "__main__":
-    App()
+    dom = createDom(root=existingCustomTkinterRoot)
 ```
 
 ## Documentation
