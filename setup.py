@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setuptools.setup(
     name='pynamicui',
-    version='0.0.7',
+    version='0.0.8',
     description='dynamic web-like UIs using a declarative syntax',
     long_description=long_description,
     long_description_content_type='text/markdown',

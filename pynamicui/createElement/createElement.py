@@ -8,9 +8,34 @@ def findDom(parent):
     else:
         # If no "root" attribute is found and there is no "parent" attribute, return None or raise an exception
         return None
-        
+
+def applyPaddingToGeometry(geometry, padx, pady):
+    """
+    Adjust the geometry with padx and pady values relative to the scale of relwidth and relheight.
+
+    Parameters:
+        geometry (dict): A dictionary representing the geometry with keys 'relwidth', 'relheight', 'relx', and 'rely'.
+        padx (float): The padding value to be applied relative to the scale of relwidth.
+        pady (float): The padding value to be applied relative to the scale of relheight.
+
+    Returns:
+        dict: A new dictionary with adjusted geometry values after applying padding.
+    """
+    adjustedGeometry = {}
+
+    scale_width = geometry.get('relwidth', 1)
+    scale_height = geometry.get('relheight', 1)
+
+    adjustedGeometry['relwidth'] = scale_width - (scale_width * padx)
+    adjustedGeometry['relheight'] = scale_height - (scale_height * pady)
+
+    adjustedGeometry['relx'] = geometry.get('relx', 0) + (.5 * scale_width * padx)
+    adjustedGeometry['rely'] = geometry.get('rely', 0) + (.5 * scale_height * pady)
+
+    return adjustedGeometry
+
 class createElement:
-    def __init__(self, parent, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None):
+    def __init__(self, parent, tag, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None, spacing=None):
         self.parent = parent
         self.name = name or "Pynamic" + tag + "Element"  # Name of the virtual element
         self.tag = "CTk" + tag  # Tag name for tkinter widget
@@ -18,6 +43,7 @@ class createElement:
         self.children = children or []  # List of child elements
         self.widget = None  # Reference to the tkinter widget instance
         self.currentPlace = place or {}  # Placement options for the widget
+        self.spacing = spacing or {"padx": 0, "pady": 0} # padx and pady
         self.visible = visible  # Flag to indicate element visibility
         self.hooks = hooks or {}  # Dictionary to store hooks
         self.style = style or ""
@@ -46,7 +72,7 @@ class createElement:
                 if child.visible:
                     child.render()  # Render each child element
 
-            self.widget.place(**self.currentPlace)  # Place the widget in the parent
+            self.place(self.currentPlace)  # Place the widget in the parent
 
     def unmount(self):
         self.mounted = False
@@ -93,12 +119,15 @@ class createElement:
     def place(self, geometry):
         self.currentPlace = geometry
         if self.widget:
-            self.widget.place(**self.currentPlace)
+            self.widget.place(**applyPaddingToGeometry(self.currentPlace, self.spacing.get("padx", 0), self.spacing.get("pady", 0)))
 
     def updateStyle(self):
         if self.style != "" and self.widget:
             for item, value in self.dom.stylesheet[self.style].items():
-                self.widget.configure(**{item: value})
+                if item in self.spacing:
+                    self.spacing[item] = value
+                else:
+                    self.widget.configure(**{item: value})
 
     def appendChild(self, child):
         if child in child.parent.children:
