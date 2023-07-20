@@ -7,10 +7,10 @@ class CounterApp:
         self.dom.useState("counter", 0, self.update_counter_label)
 
         # Create a label to display the counter value
-        self.counter_label = createElement(self.dom, "Label", props={"text": "Counter: 0"}, place={"relwidth": 1, "relheight": 0.5})
+        self.counter_label = createElement(self.dom, "Label", props={"text": "Counter: 0"}, place={"relwidth": 1, "relheight": 0.5}, spacing={"padx" : 0.1, "pady": 0.1})
 
         # Create a button to increment the counter
-        self.increment_button = createElement(self.dom, "Button", props={"text": "Increment", "command": self.increment_counter}, place={"relwidth": 1, "relheight": 0.5, "rely": 0.5})
+        self.increment_button = createElement(self.dom, "Button", props={"text": "Increment", "command": self.increment_counter}, spacing={"padx" : 0.1, "pady": 0.1}, place={"relwidth": 1, "relheight": 0.5, "rely": 0.5})
 
     def increment_counter(self):
         # Get the current counter value
@@ -26,6 +26,8 @@ class CounterApp:
 
 # Create the virtual DOM
 dom = createDom()
+
+dom.root.title("counter.py")
 
 # Render the CounterApp component
 counter_app = CounterApp(dom)

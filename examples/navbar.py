@@ -1,4 +1,4 @@
-from pynamicui import createDom, createElement
+from pynamicui import createDom, createElement, createStylesheet
 
 class NavBarApp:
     def __init__(self, dom):
@@ -8,10 +8,10 @@ class NavBarApp:
         self.navbar_container = createElement(self.dom, "Frame", place={"relwidth": 1, "relheight": 0.1})
 
         # Create the navigation buttons
-        self.home_button = createElement(self.navbar_container, "Button", props={"text": "Home", "command": lambda: self.dom.nav("home")}, place={"relwidth": 0.25, "relheight": 1})
-        self.about_button = createElement(self.navbar_container, "Button", props={"text": "About", "command": lambda: self.dom.nav("about")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.25})
-        self.products_button = createElement(self.navbar_container, "Button", props={"text": "Products", "command": lambda: self.dom.nav("products")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.5})
-        self.contact_button = createElement(self.navbar_container, "Button", props={"text": "Contact", "command": lambda: self.dom.nav("contact")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.75})
+        self.home_button = createElement(self.navbar_container, "Button", style="NavButton", props={"text": "Home", "command": lambda: self.dom.nav("home")}, place={"relwidth": 0.25, "relheight": 1})
+        self.about_button = createElement(self.navbar_container, "Button", style="NavButton", props={"text": "About", "command": lambda: self.dom.nav("about")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.25})
+        self.products_button = createElement(self.navbar_container, "Button", style="NavButton", props={"text": "Products", "command": lambda: self.dom.nav("products")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.5})
+        self.contact_button = createElement(self.navbar_container, "Button", style="NavButton", props={"text": "Contact", "command": lambda: self.dom.nav("contact")}, place={"relwidth": 0.25, "relheight": 1, "relx": 0.75})
 
         # Create a frame container for the content pages
         self.pages_container = createElement(self.dom, "Frame", place={"relwidth": 1, "relheight": 0.9, "rely": 0.1})
@@ -40,6 +40,14 @@ class NavBarApp:
 
 # Create the virtual DOM
 dom = createDom()
+
+dom.root.title("navbar.py")
+
+stylesheet = createStylesheet()
+
+stylesheet.addStyle("NavButton", {"padx" : 0.05, "pady" : 0.1})
+
+dom.setStylesheet(stylesheet)
 
 #Set the window size
 dom.setGeometry("800x600")

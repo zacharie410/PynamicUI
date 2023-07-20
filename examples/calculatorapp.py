@@ -1,4 +1,4 @@
-from pynamicui import createDom, createElement
+from pynamicui import createDom, createElement, createStylesheet
 class CalculatorApp:
     def __init__(self, dom):
         self.dom = dom
@@ -18,7 +18,7 @@ class CalculatorApp:
             self.create_button(text, i // 4, i % 4)
 
     def create_button(self, text, row, column):
-        createElement(self.dom, "Button", props={"text": text, "command": lambda: self.on_button_click(text)}, place={"relwidth": 0.25, "relheight": 0.2, "relx": 0.25 * column, "rely": 0.2 * row + 0.2})
+        createElement(self.dom, "Button", style="CalculatorButton", props={"text": text, "command": lambda: self.on_button_click(text)}, place={"relwidth": 0.25, "relheight": 0.2, "relx": 0.25 * column, "rely": 0.2 * row + 0.2})
 
     def on_button_click(self, text):
         if text == "=":
@@ -37,6 +37,14 @@ class CalculatorApp:
             self.display_label.setProp("text", self.current_value)
 # Create the virtual DOM
 dom = createDom()
+
+stylesheet = createStylesheet()
+
+stylesheet.addStyle("CalculatorButton", {"padx" : 0.1, "pady" : 0.05})
+
+dom.root.title("calculatorapp.py")
+
+dom.setStylesheet(stylesheet)
 
 # Set the window size
 dom.setGeometry("400x500")
