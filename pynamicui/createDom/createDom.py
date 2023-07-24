@@ -56,6 +56,8 @@ class createDom:
         else:
             self.states[attr] = {"value": value, "callbacks": [callback]}
         # Register a state with its initial value and associated callback
+        # Return two anonymous functions for getting and setting state
+        return lambda a=attr: self.getState(a), lambda val, a=attr: self.setState(a, val)
 
     def setStylesheet(self, sheet):
         self.stylesheet=sheet.stylesheet

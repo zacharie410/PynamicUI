@@ -1,4 +1,5 @@
 import customtkinter as tk
+import warnings
 
 def findDom(parent):
     if hasattr(parent, "root"):
@@ -67,7 +68,30 @@ def parseGrid(cols, rows, grid):
     # Return the parsed grid
     return parsed_grid
 
+def applyMarginToGeometry(geometry, marx, mary):
+    """
+    Adjust the geometry with marx and mary values relative to the parent element.
 
+    Parameters:
+        geometry (dict): A dictionary representing the geometry with keys 'relwidth', 'relheight', 'relx', and 'rely'.
+        marx (float): The margin value to be applied relative to the parent element.
+        mary (float): The margin value to be applied relative to the parent element.
+
+    Returns:
+        dict: A new dictionary with adjusted geometry values after applying margin.
+    """
+    adjustedGeometry = {}
+
+    scale_width = geometry.get('relwidth', 1)
+    scale_height = geometry.get('relheight', 1)
+
+    adjustedGeometry['relwidth'] = scale_width - marx
+    adjustedGeometry['relheight'] = scale_height - mary
+
+    adjustedGeometry['relx'] = geometry.get('relx', 0) + (.5 * marx)
+    adjustedGeometry['rely'] = geometry.get('rely', 0) + (.5 * mary)
+
+    return adjustedGeometry
 
 def applyPaddingToGeometry(geometry, padx, pady):
     """
@@ -95,7 +119,7 @@ def applyPaddingToGeometry(geometry, padx, pady):
     return adjustedGeometry
 
 class createElement:
-    def __init__(self, parent, tag, id=None, name=None, props=None, children=None, place=None, visible=True, hooks=None, style=None, spacing=None):
+    def __init__(self, parent, tag, id=None, name=None, spawnProps=None, props=None, children=None, place=None, visible=True, hooks=None, style=None, spacing=None):
         self.parent = parent
         self.name = name or "Pynamic" + tag + "Element"  # Name of the virtual element
         self.tag = "CTk" + tag  # Tag name for tkinter widget
@@ -103,13 +127,15 @@ class createElement:
         self.children = children or []  # List of child elements
         self.widget = None  # Reference to the tkinter widget instance
         self.currentPlace = place or {}  # Placement options for the widget
-        self.spacing = spacing or {"padx": 0, "pady": 0} # padx and pady
+        self.spacing = {"padx": 0, "pady": 0, "marx": 0, "mary": 0} # padx and pady
         self.visible = visible  # Flag to indicate element visibility
         self.hooks = hooks or {}  # Dictionary to store hooks
         self.style = style or ""
         self.mounted = False
         self.id = id or None
         self.grid = None
+        self.styleConfig = {}
+        self.spawnProps = spawnProps or {}
 
         if hasattr(self.parent, "root"):
             self.dom = self.parent
@@ -118,30 +144,35 @@ class createElement:
             self.dom = findDom(self.parent.parent)
             self.parent.appendChild(self)
 
+        if spacing:
+            self.spacing.update(spacing)
+
+        self.updateStyle()
+
     def render(self):
         """
         Render the element and its descendents
         """
         if self.visible:
             
-            if self.widget:
-                self.widget.destroy()
-            self.widget = getattr(tk, self.tag)(self.parent.widget)  # Create the tkinter widget
-            for prop, value in self.props.items():
-                self.widget.configure(**{prop: value})  # Configure widget properties
-            
-            self.updateStyle()
+            if not self.widget:
+                self.widget = getattr(tk, self.tag)(self.parent.widget, **self.spawnProps)  # Create the tkinter widget
 
+            self.widget.configure(**self.props)  # Configure widget properties
+            self.widget.configure(**self.styleConfig)
 
             for child in self.children:
                 if child.visible:
                     if self.grid and child.id:
                         pos = self.grid.get(child.id)
                         if pos:
-                            child.place(pos)
+                            child.currentPlace = pos
                     child.render()  # Render each child element
 
             self.place(self.currentPlace)  # Place the widget in the parent
+
+    def setId(self, id):
+        self.id = id
 
     def unmount(self):
         """
@@ -180,7 +211,8 @@ class createElement:
         Set a Widget prop value (Must be a valid element prop (refer to wiki))
         """
         self.props[prop] = value  # Update the property value
-        self.widget.configure(**{prop: value})  # Configure the updated property
+        if self.widget:
+            self.widget.configure(**{prop: value})  # Configure the updated property
         
         if self.hooks.get(prop):
             self.hooks[prop][0](prop, self, value)  # Invoke the hook callback if present
@@ -213,18 +245,28 @@ class createElement:
         """
         self.currentPlace = geometry
         if self.widget:
-            self.widget.place(**applyPaddingToGeometry(self.currentPlace, self.spacing.get("padx", 0), self.spacing.get("pady", 0)))
+            pad = applyPaddingToGeometry(self.currentPlace, self.spacing.get("padx", 0), self.spacing.get("pady", 0))
+            self.widget.place(**applyMarginToGeometry(pad, self.spacing.get("marx", 0), self.spacing.get("mary", 0)))
 
     def updateStyle(self):
         """
         This will apply any styling to the element's widget.
         """
-        if self.style != "" and self.widget:
-            for item, value in self.dom.stylesheet[self.style].items():
-                if item in self.spacing:
-                    self.spacing[item] = value
-                else:
-                    self.widget.configure(**{item: value})
+        if self.style != "":
+            if not self.style in self.dom.stylesheet:
+                warnings.warn("Invalid stylename: " + self.style)
+            else:
+                config = {}
+                for item, value in self.dom.stylesheet[self.style].items():
+                    if item in self.spacing:
+                        self.spacing[item] = value
+                    else:
+                        config[item] = value
+                self.styleConfig = config
+                if self.widget:
+                    self.widget.configure(**config)
+        else:
+            self.styleConfig = {}
 
     def appendChild(self, child):
         """
@@ -283,13 +325,26 @@ class createElement:
         if self in self.parent.children:
             index_to_remove = self.parent.children.index(self)
             self.parent.children.pop(index_to_remove)
+
         self.parent = None
         if self.widget:
             self.widget.destroy()
         self.props = {}
         self.hooks = {}
+
+
+    def destroyChildren(self):
+        """
+        Save the element but destroy all its children from the virtual DOM
+        """
         for child in self.children:
-            child.destroy()
-        del self
+            if child.widget:
+                child.widget.destroy()
+                child.props = {}
+                child.hooks = {}
+
+        self.children=[]
+        
+
 
 
