@@ -1,4 +1,4 @@
-__version__ = "0.0.9"
+__version__ = "0.1.0"
 
 import customtkinter as tk
 from PIL import Image
@@ -6,6 +6,7 @@ from PIL import Image
 from .createDom import createDom
 from .createElement import createElement
 from .createStylesheet import createStylesheet
+from .createPageViewer import createPageViewer
 
 def setAppearanceMode(mode):
     tk.set_appearance_mode(mode)
