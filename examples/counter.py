@@ -4,7 +4,7 @@ class CounterApp:
     def __init__(self, dom):
         self.dom = dom
         # Create the counter state using dom.useState
-        self.dom.useState("counter", 0, self.update_counter_label)
+        self.getCount, self.setCount = self.dom.useState("counter", 0, self.update_counter_label)
 
         # Create a label to display the counter value
         self.counter_label = createElement(self.dom, "Label", props={"text": "Counter: 0"}, place={"relwidth": 1, "relheight": 0.5}, spacing={"padx" : 0.1, "pady": 0.1})
@@ -14,11 +14,11 @@ class CounterApp:
 
     def increment_counter(self):
         # Get the current counter value
-        counter = self.dom.getState("counter")
+        counter = self.getCount()
         # Increment the counter value
         counter += 1
         # Update the counter state
-        self.dom.setState("counter", counter)
+        self.setCount(counter)
 
     def update_counter_label(self, prop, element, value):
         # Update the counter label text prop with the new counter value

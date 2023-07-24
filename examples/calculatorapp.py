@@ -52,7 +52,7 @@ if __name__ == "__main__":
     stylesheet = createStylesheet()
     stylesheet.addStyle("Container", {"padx": 0.05, "pady": 0.05})
     stylesheet.addStyle("Display", {"padx": 0.2, "pady": 0.2, "font": ("Helvetica", 42)})
-    stylesheet.addStyle("CalculatorButton", {"padx": 0.1, "pady": 0.15, "font": ("Helvetica", 42, "bold"), "fg_color": "#2E4053"})
+    stylesheet.addStyle("CalculatorButton", {"marx": 0.01, "mary": 0.015, "font": ("Helvetica", 42, "bold"), "fg_color": "#2E4053"})
     stylesheet.addNestedStyle("CalculatorButton", "CalculatorNumber", {"fg_color": "#34495E"})
     stylesheet.addNestedStyle("CalculatorButton", "EvaluateButton", {"fg_color": "#1A5276"})
 

@@ -1,70 +1,76 @@
-from pynamicui import createDom, createElement, createStylesheet
+from pynamicui import createDom, createElement, createStylesheet, createPageViewer
 
-class CalculatorApp:
+class Contact:
+    def __init__(self, name, phone, email):
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.element = None
+
+    def setElement(self, element):
+        self.element = element
+
+class ContactManagerApp:
     def __init__(self, dom):
         self.dom = dom
-        self.currentValue = ""
 
-        self.displayContainer = createElement(self.dom, "Frame", style="Container", place={"relwidth": 1, "relheight": 0.2})
-        self.buttonsContainer = createElement(self.dom, "Frame", style="Container", place={"relwidth": 1, "relheight": 0.8, "rely": 0.2})
-
-        self.buttonsContainer.setGrid(4, 5, [
-            "7", "8", "9", "/",
-            "4", "5", "6", "*",
-            "1", "2", "3", ".",
-            "0", "-", "+", "=",
-            "^", "(", ")", "=",
+        self.container = createElement(self.dom, "Frame", style="Container", place={"relwidth": 1, "relheight": 0.2})
+        self.container.setGrid(5, 1, [
+            "NameEntry", "PhoneEntry", "EmailEntry", "AddButton", "Empty"
         ])
 
-        self.displayLabel = createElement(self.displayContainer, "Label", style="Display", props={"text": ""}, place={"relwidth": 1, "relheight": 1})
+        self.nameEntry = createElement(self.container, "Entry", style="Entry", id="NameEntry")
+        self.phoneEntry = createElement(self.container, "Entry", style="Entry", id="PhoneEntry")
+        self.emailEntry = createElement(self.container, "Entry", style="Entry", id="EmailEntry")
+        self.addButton = createElement(self.container, "Button", props={"text": "Add Contact", "command": self.addContact}, style="Button", id="AddButton")
 
-        for gridId in self.buttonsContainer.grid.keys():
-            self.createButton(gridId)
+        # Create the contacts container
+        self.contactsContainer = createElement(self.dom, "Frame", style="Container", place={"relwidth": 1, "relheight": 0.8, "rely": 0.2})
 
-    def createButton(self, gridId):
-        styleName = "CalculatorButton"
-        if gridId.isnumeric():
-            styleName = "CalculatorNumber"
-        elif gridId == "=":
-            styleName = "EvaluateButton"
+        # Create the page navigation buttons
+        self.previousPageButton = createElement(self.dom, "Button", props={"text": "< Previous Page", "state" : "disabled"}, style="Button", place={"relwidth": 0.2, "relheight": 0.2, "rely" : 0.8 , "relx": 0})
+        self.nextPageButton = createElement(self.dom, "Button", props={"text": "Next Page >", "state" : "disabled"}, style="Button", place={"relwidth": 0.2, "relheight": 0.2, "rely" : 0.8 , "relx": 0.2})
 
-        createElement(self.buttonsContainer, "Button", style=styleName, props={"text": gridId, "command": lambda t=gridId: self.onButtonClick(t)}, id=gridId)
+        # Initialize the PageViewer with the created container and buttons
+        self.pageViewer = createPageViewer(self.dom, pageWidth=1, pageLength=10,
+                                      container=self.contactsContainer,
+                                        previousPageButton=self.previousPageButton,
+                                          nextPageButton=self.nextPageButton,
+                                          createItem=lambda item, container, id: self.createContactRow(container, id, item))
 
-    def onButtonClick(self, text):
-        if text == "=":
-            try:
-                result = eval(self.currentValue)
-                self.displayLabel.setProp("text", str(result))
-            except:
-                self.displayLabel.setProp("text", "Error")
-            finally:
-                self.currentValue = ""
-        else:
-            self.currentValue += text
-            self.displayLabel.setProp("text", self.currentValue)
+    def createContactRow(self, container, id, contact):
+        contactRow = createElement(container, "Frame", style="ContactRow", id=str(id))
+        contactRow.setGrid(4, 1, [
+            "NameLabel", "PhoneLabel", "EmailLabel", "DeleteButton"
+        ])
 
+        createElement(contactRow, "Label", props={"text": contact.name}, style="ContactLabel", id="NameLabel")
+        createElement(contactRow, "Label", props={"text": contact.phone}, style="ContactLabel", id="PhoneLabel")
+        createElement(contactRow, "Label", props={"text": contact.email}, style="ContactLabel", id="EmailLabel")
+        createElement(contactRow, "Button", props={"text": "Delete", "command": lambda c=contact: self.pageViewer.removeItem(c)}, style="DeleteButton", id="DeleteButton")
+
+        return contactRow
+
+    def addContact(self):
+        contact = Contact(self.nameEntry.widget.get(), self.phoneEntry.widget.get(), self.emailEntry.widget.get())
+        self.pageViewer.addItem(contact)
+
+    def deleteContact(self, contact):
+        self.pageViewer.removeItem(contact)
 
 if __name__ == "__main__":
-    # Create the virtual DOM
     dom = createDom()
-
-    # Create the stylesheet
     stylesheet = createStylesheet()
     stylesheet.addStyle("Container", {"padx": 0.05, "pady": 0.05})
-    stylesheet.addStyle("Display", {"padx": 0.2, "pady": 0.2, "font": ("Helvetica", 42)})
-    stylesheet.addStyle("CalculatorButton", {"padx": 0.1, "pady": 0.15, "font": ("Helvetica", 42, "bold"), "fg_color": "#2E4053"})
-    stylesheet.addNestedStyle("CalculatorButton", "CalculatorNumber", {"fg_color": "#34495E"})
-    stylesheet.addNestedStyle("CalculatorButton", "EvaluateButton", {"fg_color": "#1A5276"})
-
-    # Set the stylesheet to the virtual DOM
+    stylesheet.addStyle("Entry", {"padx": 0.05, "pady": 0.05})
+    stylesheet.addStyle("Button", {"padx": 0.05, "pady": 0.05})
+    stylesheet.addStyle("ContactRow", {"padx": 0.05, "pady": 0.05})
+    stylesheet.addStyle("ContactLabel", {"padx": 0.05, "pady": 0.05})
+    stylesheet.addStyle("DeleteButton", {"padx": 0.05, "pady": 0.05})
     dom.setStylesheet(stylesheet)
+    dom.root.title("Contact Manager")
+    dom.setGeometry("600x800")
 
-    # Set the window title and size
-    dom.root.title("Calculator App")
-    dom.setGeometry("400x500")
+    app = ContactManagerApp(dom)
 
-    # Create the CalculatorApp with the custom grid
-    calculator_app = CalculatorApp(dom)
-
-    # Render the virtual DOM
     dom.render()
